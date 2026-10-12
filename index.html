@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="SPORE: a personal, untested idea for an idea launchpad on the IMD network, by @justlikea_g6.">
+<title>SPORE Whitepaper</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* layout: cool pale-grey pages, Instrument Serif titles, IBM Plex Mono for reading text and diagram labels; spore-print violet only for emphasis */
+:root {
+  --paper: #F5F6F8;
+  --paper-2: #ECEEF2;
+  --ink: #1F2430;
+  --line: #3B4352;
+  --green: #6A4C93;
+  --quiet: #878D99;
+  --hair: #DDE0E6;
+  --display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", Menlo, Consolas, monospace;
+}
+@page { size: A4; margin: 22mm 20mm 22mm 20mm; background: #F5F6F8; }
+@page :first { margin: 0; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html, body { background: var(--paper); color: var(--ink); margin: 0; }
+body { font-family: var(--mono); font-size: 8.7pt; line-height: 1.7; }
+
+.cover { position: relative; width: 210mm; height: 297mm; background: var(--paper); page-break-after: always; overflow: hidden; }
+.cover .ctitle { position: absolute; left: 20mm; top: 26mm; font-family: var(--display); font-size: 54pt; font-weight: 400; color: var(--ink); line-height: 1; }
+.cover .csub { position: absolute; left: 20mm; top: 50mm; font-size: 9.5pt; color: var(--quiet); }
+.cover .art { position: absolute; left: 22mm; top: 118mm; width: 190mm; }
+.cover .cdomain { position: absolute; right: 20mm; bottom: 22mm; font-family: var(--display); font-style: italic; font-size: 16pt; color: var(--ink); text-align: right; line-height: 1.4; }
+
+.sh { break-inside: avoid; break-after: avoid; page-break-after: avoid; }
+h1 { font-family: var(--display); font-weight: 400; font-size: 24pt; color: var(--ink); margin: 0 0 5mm; line-height: 1.2; break-after: avoid; }
+h1 .n { color: var(--quiet); }
+h1 .n::after { content: " · "; color: var(--quiet); }
+h2 { font-size: 9.4pt; font-weight: 600; color: var(--ink); margin: 6mm 0 2mm; break-after: avoid; page-break-after: avoid; }
+section { margin-bottom: 11mm; }
+section.break { break-before: page; }
+p { margin: 0 0 3mm; max-width: 165mm; }
+ul, ol { margin: 0 0 3mm; padding-left: 5mm; }
+li { margin-bottom: 1.4mm; }
+ul li::marker { content: "–  "; color: var(--quiet); }
+ol li::marker { color: var(--quiet); }
+b, strong { font-weight: 700; color: var(--ink); }
+i { font-style: normal; text-decoration: underline; text-decoration-color: var(--green); text-underline-offset: 2px; }
+code { font-family: var(--mono); background: var(--paper-2); padding: 0 1mm; }
+.dim { color: var(--quiet); }
+
+.note { background: var(--paper-2); border-left: 2px solid var(--green); padding: 3.5mm 4.5mm; margin: 4mm 0; break-inside: avoid; }
+.note.warn { border-left-color: var(--quiet); }
+.note .h { font-family: var(--display); font-style: italic; font-size: 13pt; color: var(--green); margin-bottom: 1mm; }
+
+table { border-collapse: collapse; width: 100%; font-size: 8.1pt; margin: 2mm 0 5mm; break-inside: avoid; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 1.8mm 2.6mm 1.8mm 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
+th { color: var(--quiet); font-weight: 400; font-size: 7.4pt; letter-spacing: .06em; text-transform: lowercase; border-bottom: 1px solid var(--line); }
+td:first-child { font-weight: 600; }
+
+.fig { margin: 5mm 0 6mm; break-inside: avoid; }
+.fig .bar { color: var(--quiet); font-size: 7.6pt; display: flex; justify-content: space-between; margin-bottom: 2mm; }
+.fig .bar b { font-family: var(--display); font-style: italic; font-weight: 400; font-size: 13pt; color: var(--ink); }
+.fig svg { display: block; width: 100%; height: auto; }
+.fig .cap { color: var(--quiet); font-size: 7.8pt; margin-top: 2mm; }
+
+pre.code { background: var(--paper-2); padding: 3.5mm 4.5mm; margin: 2mm 0 5mm; font-family: var(--mono); font-size: 8.2pt; line-height: 1.6; white-space: pre; color: var(--ink); break-inside: avoid; }
+pre.code .c { color: var(--quiet); }
+pre.code .k { color: var(--green); font-weight: 600; }
+
+.toc { columns: 2; column-gap: 12mm; font-size: 8.6pt; margin-bottom: 6mm; }
+.toc div { break-inside: avoid; padding: .6mm 0; border-bottom: 1px solid var(--hair); }
+.toc span { color: var(--quiet); display: inline-block; width: 9mm; }
+.glance { display: grid; grid-template-columns: 34mm 1fr; gap: 1.4mm 4mm; font-size: 8.4pt; margin-bottom: 4mm; }
+.glance div:nth-child(odd) { color: var(--quiet); }
+
+@media print { .epigraph { break-before: page; page-break-before: always; padding-top: 105mm; } }
+.epigraph { margin: 22mm auto 0; max-width: 125mm; text-align: center; color: var(--ink); break-inside: avoid; }
+.epigraph p { font-family: var(--display); font-style: italic; font-size: 15pt; line-height: 1.5; line-height: 1.8; margin: 0 auto 3mm; max-width: none; }
+.epigraph .who { font-size: 7.8pt; color: var(--quiet); }
+.epigraph .who i { text-decoration: none; font-style: italic; }
+.origin { max-width: 140mm; }
+.origin p { font-size: 9.6pt; line-height: 1.85; margin-bottom: 4.5mm; }
+.origin .q { font-family: var(--display); font-style: italic; font-size: 19pt; line-height: 1.5; color: var(--green); margin: 8mm 0; }
+@media print { .origin { padding-top: 30mm; } }
+.end p { max-width: none; }
+.end { color: var(--quiet); font-size: 7.8pt; border-top: 1px solid var(--hair); padding-top: 3mm; margin-top: 10mm; }
+.end .dom { font-family: var(--display); font-style: italic; color: var(--ink); font-size: 15pt; float: right; }
+
+@media screen {
+  body { max-width: 820px; margin: 0 auto; padding: 32px 20px 64px; font-size: 14px; }
+  .cover { position: static; width: auto; height: auto; padding: 8px 0 40px; border-bottom: 1px solid var(--hair); margin-bottom: 40px; }
+  .cover .ctitle, .cover .csub, .cover .art, .cover .cdomain { position: static; }
+  .cover .csub { margin-top: 10px; }
+  .cover .art { width: 100%; margin: 24px 0 8px; }
+  .cover .cdomain { text-align: right; font-size: 22px; }
+  .pdflink { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--green); }
+  .fig { overflow-x: auto; }
+  .fig svg { min-width: 620px; }
+  table { display: block; overflow-x: auto; }
+  section.break { break-before: auto; }
+}
+@media print { .pdflink { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="ctitle">SPORE</div>
+  <div class="csub">An idea launchpad for the IMD ecosystem · a personal, untested idea</div>
+  <a class="pdflink" href="spore-whitepaper.pdf">read as pdf ↓</a>
+  <img class="art" src="cover-art.png" alt="">
+  <div class="cdomain">Whitepaper v1.0<br>October 2026</div>
+</div>
+
+<section>
+  <div class="sh"><h1>Contents</h1></div>
+  <div class="toc">
+    <div><span>00</span>Origin</div>
+    <div><span>01</span>Summary</div>
+    <div><span>02</span>Background: what IMD already has</div>
+    <div><span>03</span>How SPORE works</div>
+    <div><span>04</span>Ideas</div>
+    <div><span>05</span>Voting</div>
+    <div><span>06</span>Choosing the worker</div>
+    <div><span>07</span>Building and launch</div>
+    <div><span>08</span>Token supply of each project</div>
+    <div><span>09</span>Fees and rewards</div>
+    <div><span>10</span>The $SPORE token</div>
+    <div><span>11</span>Swarm DAO</div>
+    <div><span>12</span>Admin keys and governance</div>
+    <div><span>13</span>Risks and limits</div>
+    <div><span>A</span>Parameters</div>
+    <div><span>B</span>What SPORE needs from IMD</div>
+    <div><span>C</span>Glossary</div>
+  </div>
+  <div class="glance">
+    <div>chain</div><div>Ethereum mainnet · Uniswap v4 pools paired with IMD</div>
+    <div>voting asset</div><div>locked sIMD (no new token needed to vote)</div>
+    <div>platform token</div><div>$SPORE (draw boost + protocol revenue)</div>
+    <div>status</div><div>design proposal · nothing deployed</div>
+  </div>
+</section>
+
+</div>
+
+<section class="origin break">
+  <div class="sh"><h1>Origin</h1></div>
+  <p>This idea started with a question: <b>what could a company look like if no one owned it?</b></p>
+  <p>Not a company with a founder, a team and a cap table. A network. A place where someone with an idea, but no way to build it, could still contribute. What they bring is their imagination. They leave it on the network, and the agents learn from it.</p>
+  <p>No one judges the ideas at the door. Good or bad, they all go in. The swarm decides what is worth building, what is worth building further, and where more effort should go.</p>
+  <p>Maybe that is what a company with no owner looks like. Maybe it is also how a billion-dollar company with no one in it gets made, one small piece of imagination at a time.</p>
+  <p class="q">How far can one small piece of imagination go?</p>
+  <p class="dim">SPORE is a rough sketch of how this could work on IMD.</p>
+</section>
+
+<!-- ───────────── 01 ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">01</span>Summary</h1></div>
+  <p>The IMD swarm can already turn a written brief into deployed contracts, a token and a website, for 0.5 IMD per action. Two questions are still open. <b>Which ideas</b> deserve that work? <b>Who</b> is responsible for shipping each one? SPORE answers both with a weekly vote.</p>
+  <ul>
+    <li><b>Anyone submits an idea.</b> An idea either has no owner (a public idea) or comes from a team that wants to launch its own project. Each idea card shows its type, its token split and where its trading fees will go.</li>
+    <li><b>IMD holders vote.</b> They lock sIMD, the IMD staking share, to get voting power. The ideas with the most votes each week get built.</li>
+    <li><b>Voting also enters your agent in a draw.</b> When you vote for an idea, you can enter the IMD seats (agents) you own as candidates to build it. One builder is drawn for each winning idea. More votes give a higher chance, but no one is guaranteed to win.</li>
+    <li><b>The builder gets a larger share.</b> Every project reserves 10% of its supply for the swarm, as IMD launches do today. In SPORE, 4% of that goes to the one drawn builder, paid out over time.</li>
+    <li><b>No seat? Delegate.</b> Holders without a seat can back a seat holder's entry and receive part of that builder's share if the entry wins.</li>
+    <li><b>Voting pays more than locking alone.</b> Part of the protocol's fee income goes only to locked IMD that voted that week.</li>
+  </ul>
+  <div class="note warn">
+    <div class="h">A personal idea, untested</div>
+    This paper is one person's random idea about the IMD ecosystem. Nothing in it has been built, simulated or tested. I wrote it in the hope that it helps builders who come later. Some of the logic and ideas may be useful. Some may not be.
+  </div>
+  <div class="note">
+    <div class="h">One assumption</div>
+    This design assumes IMD can route the build work of a job to a named seat. IMD does not offer this today: the network picks seats itself. SPORE is published as an open proposal, and this feature is the main request to the IMD team (Appendix B).
+  </div>
+</section>
+
+<!-- ───────────── 02 ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">02</span>Background: what IMD already has</h1></div>
+  <p>SPORE adds as little as possible on top of parts that already exist. Figures are as of 12 October 2026.</p>
+  <table>
+    <thead><tr><th>Part</th><th>What it is</th><th>How SPORE uses it</th></tr></thead>
+    <tbody>
+      <tr><td>IMD</td><td>The ecosystem token. Supply only goes down.</td><td>Every SPORE project is paired with IMD.</td></tr>
+      <tr><td>sIMD</td><td>The IMD staking vault (ERC-4626). About 1.8M IMD staked.</td><td>Locked sIMD gives voting power.</td></tr>
+      <tr><td>Seats</td><td>2,000 NFTs. Each seat runs an AI worker that takes jobs from the network.</td><td>Seats are the candidates to build a project.</td></tr>
+      <tr><td>Swarm jobs</td><td>Paid requests (0.5 IMD each) to write, test, audit, deploy and publish sites.</td><td>Builds and audits are bought from the swarm.</td></tr>
+      <tr><td>Oracle</td><td>A panel of seats answers a question. The answer is signed so contracts can verify it.</td><td>Checks milestones and reads seat records.</td></tr>
+      <tr><td>Launch rules today</td><td>10% of each launched token goes to the swarm: 2% to wallets with accepted work, 8% split across all connected seats (about 900–986 seats in recent launches).</td><td>SPORE keeps the 10% and changes how it is split.</td></tr>
+      <tr><td>Custom pool hooks</td><td>Launches can ship an immutable Uniswap v4 hook. One live launch charges a 1% buy fee and burns 1% of sells.</td><td>SporeHook collects fees in IMD.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────── 03 ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">03</span>How SPORE works</h1></div>
+  <p>Each week is an <b>epoch</b>. In one epoch, ideas are voted on, winners are picked, and a builder is drawn for each winner. Building and launch run in the following weeks.</p>
+
+  <div class="fig">
+    <div class="bar"><span><b>fig.1</b> system map</span><span>dark = votes and tokens · green = trading fees</span></div>
+    <svg viewBox="0 0 900 520" font-family="IBM Plex Mono, Menlo, monospace" font-size="12">
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#3B4352"/></marker>
+        <marker id="g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#6A4C93"/></marker>
+        <marker id="d1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#878D99"/></marker>
+      </defs>
+      <rect width="900" height="520" fill="#F5F6F8"/>
+      <!-- actors -->
+      <rect rx="5" x="20" y="24" width="170" height="54" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="32" y="46" fill="#1F2430">Author</text><text x="32" y="66" fill="#878D99">submits an idea</text>
+
+      <rect rx="5" x="20" y="118" width="170" height="54" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="32" y="140" fill="#1F2430">IMD holder</text><text x="32" y="160" fill="#878D99">locks sIMD</text>
+
+      <rect rx="5" x="20" y="212" width="170" height="54" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="32" y="234" fill="#1F2430">Seat holder</text><text x="32" y="254" fill="#878D99">enters own agents</text>
+
+      <rect rx="5" x="20" y="306" width="170" height="54" fill="#F5F6F8" stroke="#878D99" stroke-dasharray="4 3"/>
+      <text x="32" y="328" fill="#1F2430">No seat</text><text x="32" y="348" fill="#878D99">backs a seat</text>
+
+      <!-- core -->
+      <rect rx="5" x="290" y="24" width="220" height="54" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="302" y="46" fill="#3B4352" font-weight="700">Idea board</text><text x="302" y="66" fill="#878D99">public idea or team project</text>
+
+      <rect rx="5" x="290" y="118" width="220" height="148" fill="#F5F6F8" stroke="#3B4352" stroke-width="1.5"/>
+      <text x="302" y="142" fill="#3B4352" font-weight="700">Weekly vote</text>
+      <text x="302" y="166" fill="#1F2430">1. vote on ideas</text>
+      <text x="302" y="188" fill="#1F2430">2. top K win</text>
+      <text x="302" y="210" fill="#1F2430">3. draw one builder</text>
+      <text x="302" y="232" fill="#878D99">   per winning idea</text>
+      <text x="302" y="254" fill="#878D99">   (more votes, higher odds)</text>
+
+      <rect rx="5" x="290" y="306" width="220" height="54" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="302" y="328" fill="#1F2430">Builder (drawn seat)</text><text x="302" y="348" fill="#878D99">posts IMD bond, builds</text>
+
+      <rect rx="5" x="290" y="400" width="220" height="54" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="302" y="422" fill="#1F2430">IMD swarm</text><text x="302" y="442" fill="#878D99">tests, audits, publishes</text>
+
+      <rect rx="5" x="610" y="306" width="270" height="54" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="622" y="328" fill="#1F2430">SPORE factory</text><text x="622" y="348" fill="#878D99">mints token, opens pool</text>
+
+      <rect rx="5" x="610" y="400" width="270" height="54" fill="#F5F6F8" stroke="#6A4C93"/>
+      <text x="622" y="422" fill="#6A4C93" font-weight="700">X / IMD pool + SporeHook</text><text x="622" y="442" fill="#878D99">fees collected in IMD</text>
+
+      <rect rx="5" x="610" y="118" width="270" height="148" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="622" y="142" fill="#6A4C93" font-weight="700">Fee split</text>
+      <text x="622" y="166" fill="#1F2430">protocol share</text>
+      <text x="622" y="186" fill="#878D99">  → voters who voted</text>
+      <text x="622" y="206" fill="#878D99">  → $SPORE lockers</text>
+      <text x="622" y="230" fill="#1F2430">the rest</text>
+      <text x="622" y="250" fill="#878D99">  → treasury or team</text>
+
+      <rect rx="5" x="610" y="24" width="270" height="54" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="622" y="46" fill="#1F2430">Swarm DAO</text><text x="622" y="66" fill="#878D99">seat holders run treasury</text>
+
+      <!-- arrows -->
+      <line x1="190" y1="51" x2="288" y2="51" stroke="#3B4352" marker-end="url(#a1)"/>
+      <line x1="190" y1="145" x2="288" y2="160" stroke="#3B4352" marker-end="url(#a1)"/>
+      <text x="200" y="140" fill="#3B4352" font-size="10">votes</text>
+      <line x1="190" y1="239" x2="288" y2="220" stroke="#3B4352" marker-end="url(#a1)"/>
+      <text x="200" y="224" fill="#3B4352" font-size="10">entries</text>
+      <path d="M190,333 L240,333 L240,250 L288,250" stroke="#878D99" fill="none" stroke-dasharray="4 3" marker-end="url(#d1)"/>
+      <text x="196" y="324" fill="#878D99" font-size="10">delegate</text>
+      <line x1="400" y1="78" x2="400" y2="116" stroke="#3B4352" marker-end="url(#a1)"/>
+      <line x1="400" y1="266" x2="400" y2="304" stroke="#3B4352" marker-end="url(#a1)"/>
+      <text x="408" y="290" fill="#3B4352" font-size="10">drawn</text>
+      <line x1="400" y1="360" x2="400" y2="398" stroke="#3B4352" marker-end="url(#a1)"/>
+      <path d="M510,427 L560,427 L560,333 L608,333" stroke="#3B4352" fill="none" marker-end="url(#a1)"/>
+      <text x="518" y="420" fill="#3B4352" font-size="10">passes</text>
+      <line x1="745" y1="360" x2="745" y2="398" stroke="#3B4352" marker-end="url(#a1)"/>
+      <text x="752" y="384" fill="#3B4352" font-size="10">launch</text>
+      <path d="M880,427 L892,427 L892,192 L882,192" stroke="#6A4C93" fill="none" marker-end="url(#g1)"/>
+      <text x="830" y="476" fill="#6A4C93" font-size="10">trades</text>
+      <path d="M745,118 L745,80" stroke="#6A4C93" fill="none" marker-end="url(#g1)"/>
+      <text x="752" y="104" fill="#6A4C93" font-size="10">public ideas</text>
+      <path d="M608,192 L512,192" stroke="#6A4C93" fill="none" stroke-dasharray="4 3" marker-end="url(#g1)"/>
+      <text x="520" y="184" fill="#6A4C93" font-size="10">yield</text>
+      <text x="20" y="500" fill="#878D99" font-size="10">One epoch = 7 days. Building and launch happen after the epoch closes.</text>
+    </svg>
+    <div class="cap">Voters pick ideas and enter their agents. One builder is drawn per winning idea. The swarm checks the work. Fees from the new pool flow back to voters, $SPORE lockers and the treasury or team.</div>
+  </div>
+
+  <h2>Who does what</h2>
+  <table>
+    <thead><tr><th>Role</th><th>Does</th><th>Gets</th></tr></thead>
+    <tbody>
+      <tr><td>Author</td><td>Writes the idea. A team can attach its own terms.</td><td>Public idea: optional small reward. Team project: the team share it configured.</td></tr>
+      <tr><td>Voter</td><td>Locks sIMD and votes each week</td><td>A share of protocol fees; a chance for their agents to be drawn</td></tr>
+      <tr><td>Seat holder</td><td>Enters seats as builder candidates</td><td>If drawn: 4% of the project, paid over time</td></tr>
+      <tr><td>Backer (no seat)</td><td>Backs a seat holder's entry with votes</td><td>Part of the builder share if that seat wins</td></tr>
+      <tr><td>Swarm</td><td>Tests, audits, publishes; all connected seats</td><td>6% of each project (see §08)</td></tr>
+      <tr><td>Swarm DAO</td><td>Decides how the treasury is used</td><td>Control of treasury spending</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────── 04 ───────────── -->
+<section>
+  <div class="sh"><h1><span class="n">04</span>Ideas</h1></div>
+  <p>Every idea is one of two types. The type is fixed at submission and shown on the idea card.</p>
+  <table>
+    <thead><tr><th></th><th>Type A: public idea</th><th>Type B: team project</th></tr></thead>
+    <tbody>
+      <tr><td>Who submits</td><td>Anyone. No owner after launch.</td><td>A team that wants to launch its own project on SPORE.</td></tr>
+      <tr><td>Token split</td><td>Fixed default (§08)</td><td>Set by the team, inside limits (§08)</td></tr>
+      <tr><td>Trading fees</td><td>Protocol share, then the rest to the SPORE treasury</td><td>Protocol share, then the rest as the team configured</td></tr>
+      <tr><td>Who pays for the build</td><td>SPORE treasury</td><td>The team, or the treasury if the DAO approves</td></tr>
+      <tr><td>After launch</td><td>The Swarm DAO decides on upkeep and funding</td><td>The team runs it</td></tr>
+    </tbody>
+  </table>
+  <p><b>The idea card</b> shows, before anyone votes: the type, the brief, the token split, where fees go, team vesting (Type B), and which seats have entered to build it.</p>
+  <p>Submitting needs a small deposit, returned if the idea reaches 10% of the vote threshold. This keeps spam off the board.</p>
+</section>
+
+<!-- ───────────── 05 ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">05</span>Voting</h1></div>
+
+  <h2>Voting power</h2>
+  <ul>
+    <li>Lock <b>sIMD</b> to get voting power (veIMD). Depositing plain IMD stakes it into sIMD first.</li>
+    <li>Locks are permanent by default and keep full power. To leave, turn the lock off. The sIMD then unlocks evenly over 13 weeks, and voting power falls with it.</li>
+    <li>Voting power is counted in sIMD shares. It is read once at the start of each epoch (the snapshot).</li>
+  </ul>
+
+  <h2>Voting does not spend your power</h2>
+  <p>Like Curve, voting only points your power at ideas. Your veIMD stays locked and comes back in full every epoch, so you can vote again the next week. What a vote leaves behind is a <b>vote receipt</b>: "in epoch N, this wallet gave W votes to idea X." Receipts decide your agent's chance in the draw (§06) and your share of fees (§09).</p>
+
+  <h2>One epoch</h2>
+  <div class="fig">
+    <div class="bar"><span><b>fig.2</b> epoch timeline</span><span>7 days, repeats every week</span></div>
+    <svg viewBox="0 0 900 250" font-family="IBM Plex Mono, Menlo, monospace" font-size="12">
+      <rect width="900" height="250" fill="#F5F6F8"/>
+      <line x1="40" y1="70" x2="860" y2="70" stroke="#3B4352" stroke-width="2"/>
+      <g fill="#878D99" font-size="11">
+        <text x="40" y="54">day 1</text><text x="157" y="54">2</text><text x="274" y="54">3</text><text x="391" y="54">4</text><text x="508" y="54">5</text><text x="625" y="54">6</text><text x="742" y="54">7</text><text x="830" y="54">→</text>
+      </g>
+      <g fill="#3B4352">
+        <circle cx="40" cy="70" r="5"/><circle cx="508" cy="70" r="5"/><circle cx="742" cy="70" r="5"/>
+      </g>
+      <rect rx="5" x="40" y="88" width="468" height="40" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="52" y="112" fill="#1F2430">idea voting · enter your seats · bribes open</text>
+      <rect rx="5" x="508" y="88" width="234" height="40" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="520" y="112" fill="#1F2430">builder draw window</text>
+      <rect rx="5" x="742" y="88" width="118" height="40" fill="#F5F6F8" stroke="#6A4C93"/>
+      <text x="754" y="112" fill="#6A4C93">build starts</text>
+      <text x="40" y="160" fill="#3B4352">snapshot of voting power</text>
+      <text x="508" y="160" fill="#3B4352">top K ideas win</text>
+      <text x="508" y="180" fill="#878D99">entry list committed on-chain</text>
+      <text x="742" y="160" fill="#3B4352">builder drawn</text>
+      <text x="742" y="180" fill="#878D99">bond posted</text>
+      <text x="40" y="222" fill="#878D99">Ideas that do not win stay on the board for up to 3 epochs. Their votes carry over and can grow.</text>
+    </svg>
+    <div class="cap">Votes are read from the snapshot on day 1. Locking during the week counts from the next epoch.</div>
+  </div>
+
+  <h2>Rules</h2>
+  <ul>
+    <li><b>Winning:</b> an idea must pass a minimum vote total and rank in the top K for the epoch. K starts at 2 and is lowered when many projects are still being built.</li>
+    <li><b>Carry-over:</b> an idea that does not win stays on the board for up to 3 epochs. Votes on it stay in place until the voter moves them. After 3 epochs it leaves the board and its votes are freed.</li>
+    <li><b>Bribes:</b> teams (Type B) and others can pay voters to vote for an idea through the BribeVault. Payment can be in any token, is split by votes cast for that idea, and can be set to "pay only if the idea wins."</li>
+  </ul>
+</section>
+
+<!-- ───────────── 06 ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">06</span>Choosing the worker</h1></div>
+  <p>Each winning idea gets one <b>builder</b>, drawn at random from the seats entered for it. The draw is weighted: more support gives better odds, but no one is certain to win. This keeps one large holder from taking every build.</p>
+
+  <h2>Entering</h2>
+  <ul>
+    <li>When you vote for an idea, the app reads which IMD seats your wallet owns and lets you enter any of them with one click. You split your votes on that idea across the seats you enter.</li>
+    <li>A wallet can enter at most 3 seats per idea.</li>
+    <li>Seat NFTs are only read, never locked. A seat stops working if its NFT leaves the operator's wallet.</li>
+  </ul>
+
+  <h2>Backing a seat (for holders without a seat)</h2>
+  <ul>
+    <li>Each entered seat publishes a <b>backer share</b> r: the part of its builder reward it will pass to backers if drawn. r is fixed before voting opens and capped at 60%.</li>
+    <li>A backer picks an idea and a seat and votes. These votes count toward the idea's total <i>and</i> toward that seat's odds.</li>
+    <li>If the seat is drawn, each payout of its builder share sends r to its backers, split by their votes, automatically.</li>
+    <li>If the seat is not drawn but the idea wins, backers still earn the voter fee share (§09).</li>
+  </ul>
+
+  <h2>The draw</h2>
+<pre class="code"><span class="c"># score of entered seat i</span>
+<span class="k">score_i</span> = sqrt(own votes on seat i + backer votes on seat i)
+        × boost_i      <span class="c"># 1.0 – 2.5, from the wallet's locked $SPORE</span>
+        × quality_i    <span class="c"># 0.8 – 1.2, from the seat's accepted-work rate</span>
+
+<span class="k">chance_i</span> = score_i / sum of all scores for this idea
+
+<span class="c"># randomness: the entry list and scores are committed first;</span>
+<span class="c"># the seed is the block randomness (prevrandao) of a later block</span></pre>
+  <p>The square root means 4× more votes gives 2× the score, not 4×. That limits the advantage of holders with a lot of IMD and few seats.</p>
+
+  <div class="fig">
+    <div class="bar"><span><b>fig.3</b> example draw for one idea</span><span>illustration, not a forecast</span></div>
+    <svg viewBox="0 0 900 270" font-family="IBM Plex Mono, Menlo, monospace" font-size="12">
+      <rect width="900" height="270" fill="#F5F6F8"/>
+      <g fill="#878D99" font-size="11">
+        <text x="20" y="30">entry</text><text x="200" y="30">votes</text><text x="300" y="30">√votes</text><text x="390" y="30">boost</text><text x="470" y="30">score</text><text x="560" y="30">chance of being drawn</text>
+      </g>
+      <g font-size="12">
+        <text x="20" y="70" fill="#1F2430">large holder</text><text x="200" y="70" fill="#1F2430">40,000</text><text x="300" y="70" fill="#1F2430">200</text><text x="390" y="70" fill="#1F2430">1.0×</text><text x="470" y="70" fill="#3B4352">200</text>
+        <rect x="560" y="56" width="150" height="20" fill="#3B4352"/><text x="718" y="71" fill="#3B4352">50%</text>
+
+        <text x="20" y="120" fill="#1F2430">mid holder</text><text x="200" y="120" fill="#1F2430">10,000</text><text x="300" y="120" fill="#1F2430">100</text><text x="390" y="120" fill="#1F2430">1.5×</text><text x="470" y="120" fill="#3B4352">150</text>
+        <rect x="560" y="106" width="112.5" height="20" fill="#3B4352"/><text x="680" y="121" fill="#3B4352">37.5%</text>
+
+        <text x="20" y="170" fill="#1F2430">small holder</text><text x="200" y="170" fill="#1F2430">2,500</text><text x="300" y="170" fill="#1F2430">50</text><text x="390" y="170" fill="#1F2430">1.0×</text><text x="470" y="170" fill="#3B4352">50</text>
+        <rect x="560" y="156" width="37.5" height="20" fill="#3B4352"/><text x="605" y="171" fill="#3B4352">12.5%</text>
+      </g>
+      <line x1="20" y1="200" x2="880" y2="200" stroke="#3B4352" stroke-dasharray="4 3"/>
+      <text x="20" y="226" fill="#878D99" font-size="11">Without the square root the large holder would have a 76% chance.</text>
+      <text x="20" y="246" fill="#878D99" font-size="11">All three still have a real chance. That is the point of a draw instead of "most votes wins".</text>
+    </svg>
+    <div class="cap">Quality is 1.0 for all three here. The mid holder locked $SPORE for a 1.5× boost.</div>
+  </div>
+
+  <h2>After the draw</h2>
+  <ul>
+    <li>The drawn builder posts a bond in IMD.</li>
+    <li>If the builder does not reach the first milestone within 21 days, the bond is forfeited, any unpaid builder share is cancelled, and a new builder is drawn from the remaining entries.</li>
+  </ul>
+</section>
+
+<!-- ───────────── 07 ───────────── -->
+<section>
+  <div class="sh"><h1><span class="n">07</span>Building and launch</h1></div>
+  <ol>
+    <li>The builder takes the brief and runs the build through the IMD swarm, with the main build step routed to the builder's own seat (this needs the IMD feature in Appendix B). Other seats test and audit as usual.</li>
+    <li>The work must pass the IMD audit panel with no critical or high findings.</li>
+    <li>The SPORE factory mints the token, opens an X/IMD Uniswap v4 pool with SporeHook, and sets up all payouts and vesting.</li>
+    <li><b>Milestone M1</b> is reached when the contracts are deployed and the pool is live.</li>
+  </ol>
+  <h2>SporeHook</h2>
+  <ul>
+    <li>Immutable and has no owner. Written and audited by the IMD swarm.</li>
+    <li>On buys (IMD in), it takes a small fee in IMD, for example 0.5–1%. On sells (token in), the fee is taken in the project token and kept in that project's treasury slot. It is never sold.</li>
+    <li>Only the IMD side counts as real income. Project-token fees are reported separately.</li>
+    <li>Total trading cost is the pool fee plus the hook fee, and should stay low.</li>
+  </ul>
+</section>
+
+<!-- ───────────── 08 ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">08</span>Token supply of each project</h1></div>
+  <p>Every project keeps 10% for the swarm. SPORE changes how that 10% is split so the builder gets much more than an average seat.</p>
+  <div class="fig">
+    <div class="bar"><span><b>fig.4</b> supply split, starting values</span><span>% of total supply</span></div>
+    <svg viewBox="0 0 900 300" font-family="IBM Plex Mono, Menlo, monospace" font-size="12">
+      <rect width="900" height="300" fill="#F5F6F8"/>
+      <text x="20" y="36" fill="#3B4352" font-weight="700">Type A · public idea</text>
+      <rect x="20" y="48" width="714" height="34" fill="#DED6EC"/>
+      <rect x="734" y="48" width="84" height="34" fill="#3B4352"/>
+      <rect x="818" y="48" width="34" height="34" fill="#AEB3BE"/>
+      <rect x="852" y="48" width="8.4" height="34" fill="#1F2430"/>
+      <text x="32" y="70" fill="#1F2430" font-weight="700">pool 85%</text>
+      <text x="740" y="104" fill="#3B4352">swarm 10%</text>
+      <text x="800" y="122" fill="#AEB3BE">treasury 4%</text>
+      <text x="812" y="140" fill="#1F2430">protocol 1%</text>
+
+      <text x="20" y="182" fill="#3B4352" font-weight="700">Type B · team project (example inside the limits)</text>
+      <rect x="20" y="194" width="588" height="34" fill="#DED6EC"/>
+      <rect x="608" y="194" width="168" height="34" fill="#878D99"/>
+      <rect x="776" y="194" width="84" height="34" fill="#3B4352"/>
+      <rect x="860" y="194" width="8.4" height="34" fill="#1F2430"/>
+      <text x="32" y="216" fill="#1F2430" font-weight="700">pool 70%</text>
+      <text x="616" y="216" fill="#1F2430" font-weight="700">team 19%</text>
+      <text x="782" y="250" fill="#3B4352">swarm 10%</text>
+      <text x="780" y="268" fill="#1F2430">protocol 1%</text>
+      <text x="20" y="290" fill="#878D99" font-size="11">Type B limits: pool ≥ 60%, swarm = 10%, protocol ≥ 1%, team ≤ 25% with forced vesting.</text>
+    </svg>
+    <div class="cap">The pool share is placed one-sided from the opening price upward. The protocol holds the pool position permanently.</div>
+  </div>
+
+  <h2>How the swarm's 10% is split</h2>
+  <table>
+    <thead><tr><th>Part</th><th>Share</th><th>Who</th><th>Paid how</th></tr></thead>
+    <tbody>
+      <tr><td>Builder</td><td>4%</td><td>The drawn seat (minus its backer share r)</td><td>25% at M1, the rest evenly over 90 days. Unpaid part is cancelled if the builder quits.</td></tr>
+      <tr><td>Build helpers</td><td>2%</td><td>Seats with accepted work on this project (tests, audits, site)</td><td>Evenly over 30 days</td></tr>
+      <tr><td>All active seats</td><td>4%</td><td>Every seat online at launch with recent accepted work</td><td>Evenly over 30 days</td></tr>
+    </tbody>
+  </table>
+  <p class="dim">For comparison, a seat in today's IMD launches receives about 0.009% (8% split across about 900 seats). One SPORE builder seat receives 4%. That gap is the reason seats compete to build.</p>
+</section>
+
+<!-- ───────────── 09 ───────────── -->
+<section>
+  <div class="sh"><h1><span class="n">09</span>Fees and rewards</h1></div>
+  <p>Project trading fees never go to voters directly. Voters are paid only from the protocol's own share, and only if they voted.</p>
+  <div class="fig">
+    <div class="bar"><span><b>fig.5</b> where trading fees go</span><span>IMD side of fees</span></div>
+    <svg viewBox="0 0 900 300" font-family="IBM Plex Mono, Menlo, monospace" font-size="12">
+      <defs><marker id="g5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#6A4C93"/></marker></defs>
+      <rect width="900" height="300" fill="#F5F6F8"/>
+      <rect rx="5" x="20" y="120" width="190" height="60" fill="#F5F6F8" stroke="#6A4C93"/>
+      <text x="32" y="145" fill="#6A4C93" font-weight="700">project pool</text><text x="32" y="166" fill="#878D99">hook fee + LP fee</text>
+
+      <rect rx="5" x="290" y="40" width="250" height="60" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="302" y="65" fill="#3B4352" font-weight="700">protocol share</text><text x="302" y="86" fill="#878D99">A: 20% · B: at least 10%</text>
+
+      <rect rx="5" x="290" y="200" width="250" height="60" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="302" y="225" fill="#1F2430">the rest</text><text x="302" y="246" fill="#878D99">A: treasury · B: team's choice</text>
+
+      <rect rx="5" x="620" y="20" width="260" height="60" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="632" y="45" fill="#1F2430">30% → voter pool</text><text x="632" y="66" fill="#878D99">only locks that voted</text>
+
+      <rect rx="5" x="620" y="100" width="260" height="60" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="632" y="125" fill="#1F2430">70% → $SPORE lockers</text><text x="632" y="146" fill="#878D99">locked $SPORE</text>
+
+      <rect rx="5" x="620" y="200" width="260" height="60" fill="#F5F6F8" stroke="#3B4352"/>
+      <text x="632" y="225" fill="#1F2430">Swarm DAO / team</text><text x="632" y="246" fill="#878D99">decides use</text>
+
+      <path d="M210,140 L250,140 L250,70 L288,70" stroke="#6A4C93" fill="none" marker-end="url(#g5)"/>
+      <path d="M210,160 L250,160 L250,230 L288,230" stroke="#6A4C93" fill="none" marker-end="url(#g5)"/>
+      <path d="M540,60 L580,60 L580,50 L618,50" stroke="#6A4C93" fill="none" marker-end="url(#g5)"/>
+      <path d="M540,80 L580,80 L580,130 L618,130" stroke="#6A4C93" fill="none" marker-end="url(#g5)"/>
+      <line x1="540" y1="230" x2="618" y2="230" stroke="#6A4C93" marker-end="url(#g5)"/>
+    </svg>
+    <div class="cap">The protocol share has a floor written into the factory. A team cannot configure below it.</div>
+  </div>
+
+  <h2>The voter pool, like a staking yield</h2>
+  <ul>
+    <li>Each epoch, 30% of all protocol fee income goes to the voter pool.</li>
+    <li><b>70% of the pool</b> is split by voting power used that epoch. Anyone who voted (or backed a seat) earns it, whichever idea they chose.</li>
+    <li><b>30% of the pool</b> goes to voters of launched projects, weighted by the fees each project produces, for 6 months after launch. This rewards picking ideas people actually use.</li>
+    <li>Locking without voting earns nothing from this pool.</li>
+  </ul>
+  <table>
+    <thead><tr><th>What you do</th><th>Voter pool</th><th>Chance to build</th></tr></thead>
+    <tbody>
+      <tr><td>Lock only</td><td>none</td><td>none</td></tr>
+      <tr><td>Lock and vote</td><td>equal part</td><td>if you entered a seat</td></tr>
+      <tr><td>Vote for a project that launches and trades</td><td>equal part + project part for 6 months</td><td>if you entered a seat</td></tr>
+      <tr><td>Back a seat (no seat of your own)</td><td>same as voting</td><td>backer share r if that seat is drawn</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────── 10 ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">10</span>The $SPORE token</h1></div>
+  <p>Voting does not need $SPORE. Locked sIMD is enough. $SPORE has two uses:</p>
+  <ul>
+    <li><b>Boost.</b> Locked $SPORE raises your seats' score in the builder draw by up to 2.5×. This follows Curve's boost, where locked CRV raises a liquidity provider's rewards. The exact curve will be set before launch.</li>
+    <li><b>Protocol income.</b> Locked $SPORE receives 70% of the protocol fee share.</li>
+  </ul>
+  <p><b>Launch.</b> $SPORE launches on SPORE itself, as the first Type B project, paired with IMD and with SporeHook. Its swarm 10% goes to seats like any other project. The first holders are therefore seat holders, who are also the people who want the boost.</p>
+  <p><b>Check.</b> If most protocol income comes from trading $SPORE itself rather than other projects, the token's yield is mostly circular. SPORE will publish that ratio every epoch.</p>
+</section>
+
+<!-- ───────────── 11 ───────────── -->
+<section>
+  <div class="sh"><h1><span class="n">11</span>Swarm DAO</h1></div>
+  <p>The swarm acts as a judge for things that have no owner.</p>
+  <ul>
+    <li><b>Members:</b> IMD seat holders. Votes are counted per seat from a snapshot. Seats are only read, never locked.</li>
+    <li><b>Decides:</b> how the treasury is spent (building public ideas, paying people to maintain launched public projects, bounties, liquidity support), and what happens to public projects after launch.</li>
+    <li><b>Limits:</b> a spending cap per epoch, and every spend is public. Members can also be builder candidates, so the cap limits how much the DAO can direct to its own members.</li>
+  </ul>
+</section>
+
+<!-- ───────────── 12 ───────────── -->
+<section>
+  <div class="sh"><h1><span class="n">12</span>Admin keys and governance</h1></div>
+  <ul>
+    <li>At launch, the SPORE founder holds contract ownership so parameters can be tuned: K, fee shares, vesting lengths, boost curve, bond size.</li>
+    <li>Some limits are written into the contracts and cannot be changed by the owner: the protocol fee floor, the team share cap (25%) with forced vesting, the backer share cap (60%), and the swarm's 10%.</li>
+    <li>Parameter changes go through a 48-hour delay.</li>
+    <li>Once the system runs stably, ownership is handed over step by step, first to a multisig and then to on-chain governance.</li>
+  </ul>
+</section>
+
+<!-- ───────────── 13 ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">13</span>Risks and limits</h1></div>
+  <table>
+    <thead><tr><th>Risk</th><th>What it means</th><th>How SPORE handles it</th></tr></thead>
+    <tbody>
+      <tr><td>Builder routing</td><td>IMD cannot yet route a job to a chosen seat.</td><td>Proposed as an IMD feature (Appendix B). Without it, the builder builds with its own agent and the swarm only audits.</td></tr>
+      <tr><td>Demand</td><td>Rewards are paid in new project tokens. Most new tokens have little buying interest.</td><td>Only K projects per epoch. Fee-weighted voter rewards favour ideas that get used.</td></tr>
+      <tr><td>Concentration</td><td>Large holders and holders of many seats have more votes and more entries.</td><td>A weighted draw with a square root instead of "most votes wins", a 3-seat entry limit per wallet, and public vote records.</td></tr>
+      <tr><td>Wallet splitting</td><td>Per-wallet limits can be bypassed with more wallets.</td><td>Not fully solvable on-chain. Seat counts are a hard limit, and splitting IMD across wallets adds no seats.</td></tr>
+      <tr><td>Builds take time</td><td>A build can take weeks, so projects in progress pile up.</td><td>K is lowered when many builds are open. A 21-day limit to reach M1, then a redraw.</td></tr>
+      <tr><td>Launch-day selling</td><td>All non-pool shares cost nothing, and new pools have no buyers below the opening price.</td><td>Every non-pool share vests over time.</td></tr>
+      <tr><td>DAO self-interest</td><td>DAO members can direct funds to builds they take part in.</td><td>Per-epoch spending cap and public spending.</td></tr>
+      <tr><td>Shared sIMD</td><td>imdUSD also uses sIMD as collateral.</td><td>The same sIMD cannot do both. Collateral cannot vote.</td></tr>
+      <tr><td>IMD dependency</td><td>Seat records and the oracle are run by IMD.</td><td>SPORE only reads them. Milestones can fall back to a multisig decision.</td></tr>
+      <tr><td>Legal</td><td>Fee sharing to voters may be treated as a financial product in some places.</td><td>Receipts cannot be transferred at first. Get legal advice before launch. This document is not legal or investment advice.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────── APPENDIX ───────────── -->
+<section class="break">
+  <div class="sh"><h1><span class="n">A</span>Parameters (starting values)</h1></div>
+  <table>
+    <thead><tr><th>Parameter</th><th>Value</th><th>Changeable by owner</th></tr></thead>
+    <tbody>
+      <tr><td>Epoch length</td><td>7 days</td><td>yes</td></tr>
+      <tr><td>Winning ideas per epoch (K)</td><td>2</td><td>yes</td></tr>
+      <tr><td>Idea carry-over</td><td>up to 3 epochs</td><td>yes</td></tr>
+      <tr><td>Lock unwind</td><td>13 weeks</td><td>yes</td></tr>
+      <tr><td>Seats entered per wallet per idea</td><td>3</td><td>yes</td></tr>
+      <tr><td>Backer share cap (r)</td><td>60%</td><td>no</td></tr>
+      <tr><td>$SPORE boost</td><td>1.0–2.5×</td><td>curve: yes · cap: no</td></tr>
+      <tr><td>Quality factor</td><td>0.8–1.2</td><td>yes</td></tr>
+      <tr><td>Swarm share of supply</td><td>10% (4 / 2 / 4)</td><td>total: no · split: yes</td></tr>
+      <tr><td>Builder vesting</td><td>25% at M1, rest over 90 days</td><td>yes</td></tr>
+      <tr><td>Time to reach M1</td><td>21 days</td><td>yes</td></tr>
+      <tr><td>Protocol fee share</td><td>A: 20% · B: ≥ 10%</td><td>floor: no</td></tr>
+      <tr><td>Protocol supply share</td><td>≥ 1%</td><td>floor: no</td></tr>
+      <tr><td>Team share (Type B)</td><td>≤ 25%, forced vesting</td><td>cap: no</td></tr>
+      <tr><td>Voter pool</td><td>30% of protocol fees (70% equal / 30% by project fees, 6 months)</td><td>yes</td></tr>
+      <tr><td>Hook fee</td><td>0.5–1% on buys</td><td>fixed per pool at launch</td></tr>
+      <tr><td>Parameter change delay</td><td>48 hours</td><td>no</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <div class="sh"><h1><span class="n">B</span>What SPORE needs from IMD</h1></div>
+  <ol>
+    <li><b>Route a job to a named seat.</b> A field such as <code>leadSeat</code> on a job or launch request, so the main build step goes to the drawn builder. All other steps can still be dispatched by the network.</li>
+    <li><b>Signed seat records.</b> Accepted-work counts per seat, signed by the IMD oracle, so contracts can read seat quality without trusting a server.</li>
+    <li><b>Per-project work records.</b> Which seats did accepted work on a given project, so the 2% build-helper share can be paid on-chain.</li>
+  </ol>
+  <p>In return, SPORE brings new paid jobs to the swarm, locks sIMD for long periods, and pairs every project with IMD.</p>
+</section>
+
+<section>
+  <div class="sh"><h1><span class="n">C</span>Glossary</h1></div>
+  <table>
+    <tbody>
+      <tr><td>Epoch</td><td>One 7-day voting round.</td></tr>
+      <tr><td>sIMD</td><td>The share token of the IMD staking vault.</td></tr>
+      <tr><td>veIMD</td><td>Voting power from locked sIMD.</td></tr>
+      <tr><td>Seat</td><td>An IMD NFT that runs one AI worker.</td></tr>
+      <tr><td>Swarm</td><td>All IMD seats working on the network.</td></tr>
+      <tr><td>Builder</td><td>The seat drawn to build a winning idea.</td></tr>
+      <tr><td>Backer</td><td>A voter without a seat who supports a seat's entry.</td></tr>
+      <tr><td>Vote receipt</td><td>The on-chain record of how many votes a wallet gave an idea in an epoch.</td></tr>
+      <tr><td>Snapshot</td><td>The reading of voting power taken at the start of each epoch.</td></tr>
+      <tr><td>M1</td><td>Milestone: contracts deployed and pool live.</td></tr>
+      <tr><td>SporeHook</td><td>The fee hook attached to every SPORE pool.</td></tr>
+      <tr><td>BribeVault</td><td>Contract where anyone can pay voters to vote for an idea.</td></tr>
+      <tr><td>Swarm DAO</td><td>Seat holders voting on treasury use.</td></tr>
+    </tbody>
+  </table>
+  <div class="end">
+    <p><b>About this paper.</b> SPORE is a personal idea, written quickly and not tested. It imagines what could happen if the swarm's share were not a fixed 10% split evenly, but something agents could compete and bribe for. Take what is useful and leave the rest.</p>
+    <p>Written by <b>@justlikea_g6</b> · x.com/justlikea_g6</p>
+    <p>Version 1.0 · October 2026. All figures about IMD come from public IMD docs and on-chain reads as of 12 October 2026. Nothing here is an offer, investment advice or legal advice.</p>
+    <span class="dom">SPORE</span>
+  </div>
+  <div class="epigraph">
+    <p>To you, the clever and crafty, bitter beyond all bitterness, who has sinned against the gods in bestowing honors upon creatures of a day—to you, thief of fire, I speak.</p>
+    <div class="who">— Hermes to Prometheus · Aeschylus, <i>Prometheus Bound</i> (tr. H. W. Smyth)</div>
+  </div>
+
+</section>
+
+</body>
+</html>
